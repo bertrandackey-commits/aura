@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#050307" />
+  <title>Aura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cinzel:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="preload" href="models/salon.glb" as="fetch" crossorigin />
+  <link rel="preload" href="models/voyante.glb" as="fetch" crossorigin />
+  <script type="module" crossorigin src="./assets/index-yd_asY8H.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-Cqbgrq3D.css">
+</head>
+<body>
+  <canvas id="monde"></canvas>
+  <div id="grain"></div>
+  <div id="voile" class="plein"></div>
+
+  <!-- ============ LE SEUIL : un seul geste ============ -->
+  <!-- en ligne : la porte du salon (mot de passe vérifié par le serveur) -->
+  <section id="verrou" class="ecran">
+    <form id="verrou-form" class="verrou-int">
+      <h1>AURA</h1>
+      <p class="devise">Le salon est réservé à des proches.</p>
+      <input id="verrou-mdp" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Mot de passe" aria-label="Mot de passe" />
+      <button class="sceau" type="submit">Ouvrir</button>
+      <p class="mention" id="verrou-msg"></p>
+    </form>
+  </section>
+
+  <section id="seuil" class="ecran actif">
+    <div class="seuil-int">
+      <div class="sigle" aria-hidden="true">
+        <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" /><circle cx="60" cy="60" r="38" /><path d="M60 4 L60 116 M4 60 L116 60" /><circle cx="60" cy="60" r="9" class="plein" /></svg>
+      </div>
+      <h1>AURA</h1>
+      <p class="devise">Le salon où l'on se rencontre soi-même</p>
+      <p class="preparation">
+        Mettez un casque. Baissez la lumière autour de vous.<br />
+        Aura vous parlera, et vous écoutera.
+      </p>
+      <button id="entrer" class="sceau">Entrer</button>
+      <label class="se-souvenir"><input type="checkbox" id="se-souvenir" /> Qu'Aura se souvienne de mon prénom et de ma date de naissance, sur cet appareil seulement</label>
+      <p class="chargement" id="chargement">Le salon se prépare…</p>
+      <p class="mention">
+        Aura est une intelligence artificielle : un miroir symbolique, pas une prédiction ni un soin.
+        Votre micro reste ouvert pendant la séance. Ce que vous dites sert seulement à vous répondre : rien n'est conservé, sauf si vous cochez la case ci-dessus (et seulement sur cet appareil ; le Grimoire permet de tout effacer).
+        Si vous traversez une détresse, appelez le <strong>3114</strong>, jour et nuit.
+      </p>
+      <button class="lien" id="ouvrir-grimoire">Le Grimoire de mes visites</button>
+    </div>
+  </section>
+
+  <!-- ============ LE SALON ============ -->
+  <div id="sous-titres" aria-live="polite"></div>
+
+  <!-- l'écoute : un anneau de lumière, pas de bouton -->
+  <div id="ecoute" class="cache" aria-live="polite">
+    <div class="anneau" id="anneau" role="button" tabindex="0" aria-label="Écrire à Aura"><span class="coeur"></span></div>
+    <p class="ecoute-indice" id="ecoute-indice">Parlez à Aura… ou écrivez</p>
+    <p id="entendu"></p>
+    <form id="ecrire" autocomplete="off" class="cache">
+      <input id="saisie" placeholder="Écrivez, puis Entrée" maxlength="1200" enterkeyhint="send" />
+    </form>
+  </div>
+
+  <!-- Rituel du Trait -->
+  <section id="trait" class="ecran rituel-ecran">
+    <canvas id="toile"></canvas>
+    <canvas id="toile-vive"></canvas>
+    <div class="trait-consigne">
+      <p class="t1">Fermez les yeux.</p>
+      <p class="t2">Laissez votre main danser. Quand elle se pose, le dessin se scelle.</p>
+    </div>
+    <div class="sceau-trait" id="sceau-trait"></div>
+    <div class="trait-bas"><button id="trait-effacer" class="lien">recommencer</button></div>
+  </section>
+
+  <!-- Rituel de la Flamme -->
+  <section id="flamme" class="ecran">
+    <!-- le parchemin est dans le salon (3D) ; ce champ invisible reçoit seulement les frappes du clavier -->
+    <textarea id="parchemin-texte" maxlength="300" aria-label="Ce que je laisse partir ce soir" autocomplete="off" spellcheck="false"></textarea>
+    <div class="flamme-bas">
+      <p class="flamme-consigne">Écrivez sur le parchemin ce que vous laissez partir ce soir…</p>
+      <div class="flamme-choix" id="flamme-choix">
+        <button class="sceau petit" data-choix="secret">Le garder secret</button>
+        <button class="sceau petit" data-choix="confier">Le confier à Aura</button>
+      </div>
+      <p class="flamme-note">Gardé secret, il n'est ni lu, ni envoyé, ni conservé. Confié, il est transmis à Aura le temps de sa réponse, puis oublié.</p>
+    </div>
+  </section>
+
+  <!-- Les Arcanes -->
+  <div id="arcanes-hud" class="cache">
+    <p class="arc-consigne">Laissez votre main être attirée… <span id="arc-compte">0</span> / 3</p>
+    <div class="arc-positions">
+      <span data-pos="0">Ce qui fut</span><span data-pos="1">Ce qui est</span><span data-pos="2">Ce qui cherche à naître</span>
+    </div>
+  </div>
+
+  <!-- Le Grimoire -->
+  <section id="grimoire" class="ecran">
+    <div class="grimoire-int">
+      <header>
+        <h2>Le Grimoire</h2>
+        <p>Vos visites, gardées sur cet appareil seulement.</p>
+        <button class="fermer" id="fermer-grimoire" aria-label="Fermer">×</button>
+      </header>
+      <div id="constellation"></div>
+      <div id="pages"></div>
+      <button class="lien danger" id="oublier">Tout oublier</button>
+    </div>
+  </section>
+
+  <!-- Clôture -->
+  <section id="cloture" class="ecran">
+    <div class="cloture-int">
+      <p class="sur-titre">Ce que vous emportez</p>
+      <blockquote id="phrase-emportee"></blockquote>
+      <div class="cloture-actions">
+        <button class="lien" id="cloture-grimoire">Voir mon Grimoire</button>
+        <button class="lien" id="cloture-seuil">Revenir au seuil</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sécurité -->
+  <section id="crise" class="ecran">
+    <div class="crise-int">
+      <p>Ce que vous vivez compte.</p>
+      <p class="grand">Appelez le <a href="tel:3114">3114</a></p>
+      <p>Prévention du suicide · gratuit · 24h/24 · 7j/7</p>
+      <p>Danger immédiat : <a href="tel:112">112</a></p>
+      <button class="lien" id="fermer-crise">Revenir</button>
+    </div>
+  </section>
+
+  <div id="hud" class="cache">
+    <button id="son" aria-label="Couper le son">♪</button>
+    <button id="quitter" aria-label="Quitter le salon">×</button>
+  </div>
+  <div id="curseur"></div>
+
+</body>
+</html>
